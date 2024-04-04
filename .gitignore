@@ -1,0 +1,9 @@
+#docker
+.docker/
+
+#env file
+.env/
+env/
+.env.dev
+
+
