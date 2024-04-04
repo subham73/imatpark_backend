@@ -12,6 +12,8 @@ configuration
       `# flake8: noqa` ignores the file from linting
       `# noqa` iqnors the line from linting
       `# noqa: <error>` ignores specific error on the line
+
+      added .flake8 inside app/ folder to ignore the files and folders from linting
 4) created a .gitignore file
     -ignores the files and folders from git
 
@@ -53,4 +55,9 @@ configuration
     ALLOWED_HOSTS =  list of strings representing the host/domain names that your Django application can serve.
 
     DEBUG =  a boolean that turns on/off the debug mode of Django.
-8)
+
+8) created github actions
+    -created a folder .github/workflows
+    -created a file checks.yml
+    -when pushed it will perform the job mentioned
+

@@ -4,6 +4,8 @@ services:
   app:
     build:
       context: .
+      args:
+        - DEV=true
     volumes:
       - ./app:/app
     ports:
