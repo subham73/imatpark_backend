@@ -4,7 +4,6 @@
 #env file
 .env/
 env/
-.env.dev
 
 # Python
 app/__pycache__/
