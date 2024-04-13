@@ -6,8 +6,8 @@
 env/
 
 # Python
-app/__pycache__/
-app/*/__pycache__/
-app/*/*/__pycache__/
-app/*/*/*/__pycache__/
+__pycache__/
+*.pyc
 
+#migration
+app/core/migrations/
