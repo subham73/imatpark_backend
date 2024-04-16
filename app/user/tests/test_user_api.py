@@ -5,13 +5,16 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
-from rest_framework.test import APIClient  # Allows to make test requests to our API
+# Allows to make test requests to our API
+from rest_framework.test import APIClient
+
 from rest_framework import status
 
 
 CREATE_USER_URL = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
+
 
 def create_user(**params):
     """Helper function to create new user"""
@@ -77,7 +80,7 @@ class PublicUserApiTests(TestCase):
         }
         create_user(**user_details)
 
-        payload ={
+        payload = {
             'email': user_details['email'],
             'password': user_details['password']
         }
@@ -88,7 +91,7 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_bad_credentials(self):
         """Test that token is not generated for invalid credentials"""
-        create_user(email ="test@example.com", password="goodpass")
+        create_user(email="test@example.com", password="goodpass")
 
         payload = {'email': 'test@example.com', 'password': 'badpass'}
         res = self.client.post(TOKEN_URL, payload)
@@ -98,7 +101,7 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_blank_password(self):
         """Test posting a blank password returns an error"""
-        payload = { 'email': 'test@example.com', 'password': ''}
+        payload = {'email': 'test@example.com', 'password': ''}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -109,6 +112,7 @@ class PublicUserApiTests(TestCase):
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateUserApiTests(TestCase):
     """Test API requests that require authentication"""

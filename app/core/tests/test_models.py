@@ -12,10 +12,10 @@ from django.core.exceptions import ValidationError
 from datetime import datetime
 current_year = datetime.now().year
 
+
 def create_user(email="user@example.com", password="testpass123"):
     """Create a sample user"""
-    user =  get_user_model().objects.create_user(email, password)
-    return user
+    return get_user_model().objects.create_user(email, password)
 
 
 class ModelTests(TestCase):
@@ -80,7 +80,7 @@ class ModelTests(TestCase):
             user.weight = weight
             try:
                 user.full_clean()
-            except ValidationError as e:
+            except ValidationError:
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_height_and_weight))
 
@@ -96,8 +96,8 @@ class ModelTests(TestCase):
             -12,   # Negative values
             0,     # Zero
             1899,  # Values just below the minimum allowed values
-            current_year-1, # Values just above the maximum allowed values
-            current_year+2, # Values in the future
+            current_year-1,  # Values just above the maximum allowed values
+            current_year+2,  # Values in the future
         ]
 
         exceptions_count = 0
@@ -105,6 +105,6 @@ class ModelTests(TestCase):
             user.year_of_birth = year
             try:
                 user.full_clean()
-            except ValidationError as e:
+            except ValidationError:
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_years))

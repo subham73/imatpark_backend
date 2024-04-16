@@ -16,6 +16,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from datetime import datetime
 current_year = datetime.now().year
 
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """Creates and saves a new user"""
@@ -43,7 +44,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     height = models.PositiveIntegerField(
         default=160,
-        validators=[MinValueValidator(50), MaxValueValidator(300)],
+        validators=[
+            MinValueValidator(50),
+            MaxValueValidator(300)
+        ],
         error_messages={
             'min_value': 'Height must be at least 50.',
             'max_value': 'Height cannot exceed 300.',
@@ -59,7 +63,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     year_of_birth = models.PositiveIntegerField(
         default=2000,
-        validators=[MinValueValidator(1900), MaxValueValidator(current_year-5)],
+        validators=[
+            MinValueValidator(1900),
+            MaxValueValidator(current_year-5)
+        ],
         error_messages={
             'min_value': 'Year of birth must be at least 1900.',
             'max_value': 'you must be at least 5 years old.',
