@@ -11,7 +11,10 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+from django.core.validators import MinValueValidator, MaxValueValidator
 
+from datetime import datetime
+current_year = datetime.now().year
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -38,6 +41,30 @@ class User(AbstractBaseUser, PermissionsMixin):
     """User in the system."""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    height = models.PositiveIntegerField(
+        default=160,
+        validators=[MinValueValidator(50), MaxValueValidator(300)],
+        error_messages={
+            'min_value': 'Height must be at least 50.',
+            'max_value': 'Height cannot exceed 300.',
+        }
+    )
+    weight = models.PositiveIntegerField(
+        default=60,
+        validators=[MinValueValidator(20), MaxValueValidator(600)],
+        error_messages={
+            'min_value': 'Weight must be at least 20.',
+            'max_value': 'Weight cannot exceed 600.',
+        }
+    )
+    year_of_birth = models.PositiveIntegerField(
+        default=2000,
+        validators=[MinValueValidator(1900), MaxValueValidator(current_year-5)],
+        error_messages={
+            'min_value': 'Year of birth must be at least 1900.',
+            'max_value': 'you must be at least 5 years old.',
+        }
+    )
     is_active = models.BooleanField(default=True)  # can login
     is_staff = models.BooleanField(default=False)  # staff user
 
