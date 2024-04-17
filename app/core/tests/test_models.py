@@ -7,15 +7,15 @@ Tests for models
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
-# from core import models
+from core import models
 
 from datetime import datetime
 current_year = datetime.now().year
 
 
-def create_user(email="user@example.com", password="testpass123"):
+def create_user(email="user@example.com", password="testpass123", **extra_fields):
     """Create a sample user"""
-    return get_user_model().objects.create_user(email, password)
+    return get_user_model().objects.create_user(email, password, extra_fields)
 
 
 class ModelTests(TestCase):
@@ -59,8 +59,24 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
+    def test_new_user_valid_height_weight(self):
+        """Test the creation of user with valid
+             height and weight """
+        paylaod ={
+            'height':120,
+            'weight':80
+        }
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'test123',
+            height = paylaod['height'],
+            weight = paylaod['weight'],
+        )
+        self.assertEqual(user.height, paylaod['height'])
+        self.assertEqual(user.weight, paylaod['weight'])
+
     def test_new_user_invalid_height_weight(self):
-        """Test the height and weight for a new user"""
+        """Test the invalid height and weight for a new user"""
         email = 'user@example.com'
         password = "pass@123"
         user = get_user_model().objects.create_user(
@@ -83,6 +99,18 @@ class ModelTests(TestCase):
             except ValidationError:
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_height_and_weight))
+
+    def test_new_user_valid_year_of_birth(self):
+        """Test the creation on a new user with valid year of birth"""
+        payload = {
+            'year_of_birth':2001
+        }
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'test123',
+            year_of_birth = payload['year_of_birth'],
+        )
+        self.assertEqual(user.year_of_birth, payload['year_of_birth'])
 
     def test_new_user_invalid_year_of_birth(self):
         """Test the year of birth for a new user"""
@@ -108,3 +136,14 @@ class ModelTests(TestCase):
             except ValidationError:
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_years))
+
+    def test_create_exercise(self):
+        """Test the exercise string representation"""
+
+        exercise = models.Exercise.objects.create(
+            name='Pull-up',
+            description='Pull-up exercise',
+            dificulty_level=2
+        )
+
+        self.assertEqual(str(exercise), exercise.name)

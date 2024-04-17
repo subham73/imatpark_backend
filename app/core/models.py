@@ -77,3 +77,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
     USERNAME_FIELD = 'email'  # default username field
+
+class Exercise(models.Model):
+    """Exercise model"""
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+
+    dificulty_level = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(3)],
+        error_messages={
+            'min_value': 'Dificulty level must be at least 1.',
+            'max_value': 'Dificulty level cannot exceed 3.',
+        }
+    )
+    def __str__(self):
+        return self.name
