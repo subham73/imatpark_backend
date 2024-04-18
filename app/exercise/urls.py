@@ -1,5 +1,5 @@
 """
-URL mapping for recipe app
+URL mapping for exercise app
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
