@@ -13,9 +13,13 @@ from datetime import datetime
 current_year = datetime.now().year
 
 
-def create_user(email="user@example.com", password="testpass123", **extra_fields):
+def create_user(email="user@example.com",
+                password="testpass123",
+                **extra_fields):
     """Create a sample user"""
-    return get_user_model().objects.create_user(email, password, extra_fields)
+    return get_user_model().objects.create_user(email,
+                                                password,
+                                                extra_fields)
 
 
 class ModelTests(TestCase):
@@ -62,15 +66,15 @@ class ModelTests(TestCase):
     def test_new_user_valid_height_weight(self):
         """Test the creation of user with valid
              height and weight """
-        paylaod ={
-            'height':120,
-            'weight':80
+        paylaod = {
+            'height': 120,
+            'weight': 80,
         }
         user = get_user_model().objects.create_user(
             'test@example.com',
             'test123',
-            height = paylaod['height'],
-            weight = paylaod['weight'],
+            height=paylaod['height'],
+            weight=paylaod['weight'],
         )
         self.assertEqual(user.height, paylaod['height'])
         self.assertEqual(user.weight, paylaod['weight'])
@@ -103,12 +107,12 @@ class ModelTests(TestCase):
     def test_new_user_valid_year_of_birth(self):
         """Test the creation on a new user with valid year of birth"""
         payload = {
-            'year_of_birth':2001
+            'year_of_birth': 2001,
         }
         user = get_user_model().objects.create_user(
             'test@example.com',
             'test123',
-            year_of_birth = payload['year_of_birth'],
+            year_of_birth=payload['year_of_birth'],
         )
         self.assertEqual(user.year_of_birth, payload['year_of_birth'])
 
