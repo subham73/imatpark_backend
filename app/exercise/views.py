@@ -18,25 +18,25 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import (
-    Exercise,
+    StrengthExercise,
 )
 
 from exercise import serializers
 
 
-class ExerciseViewSet(viewsets.ModelViewSet):
+class StrengthExerciseViewSet(viewsets.ModelViewSet):
     """Manage exercises in the database"""
-    serializer_class = serializers.ExerciseSerializer
-    queryset = Exercise.objects.all().order_by('-id')
+    serializer_class = serializers.StrengthExerciseSerializer
+    queryset = StrengthExercise.objects.all().order_by('-id')
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
         if self.action == 'list':
-            return serializers.ExerciseSerializer
+            return serializers.StrengthExerciseSerializer
         else:
-            return serializers.ExerciseDetailSerializer
+            return serializers.StrengthExerciseDetailSerializer
 
     # def get_queryset(self):
     #     """Retrieve the exercises for the authenticated user"""

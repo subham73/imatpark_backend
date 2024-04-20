@@ -141,13 +141,13 @@ class ModelTests(TestCase):
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_years))
 
-    def test_create_exercise(self):
-        """Test the exercise string representation"""
+    def test_create_StrengthExercise(self):
+        """Test the StrengthExercise string representation"""
 
-        exercise = models.Exercise.objects.create(
+        strength_exercise = models.StrengthExercise.objects.create(
             name='Pull-up',
             description='Pull-up exercise',
             dificulty_level=2
         )
 
-        self.assertEqual(str(exercise), exercise.name)
+        self.assertEqual(str(strength_exercise), strength_exercise.name)

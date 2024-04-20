@@ -7,7 +7,9 @@ from exercise import views
 
 router = DefaultRouter()
 
-router.register('exercise', views.ExerciseViewSet)
+router.register('strength-exercise',
+                views.StrengthExerciseViewSet,
+                basename='strength-exercise')
 
 app_name = 'exercise'
 

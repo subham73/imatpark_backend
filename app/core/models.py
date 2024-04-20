@@ -79,8 +79,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'  # default username field
 
 
-class Exercise(models.Model):
-    """Exercise model"""
+class StrengthExercise(models.Model):
+    """Strength Exercise model"""
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
 
