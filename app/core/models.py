@@ -79,26 +79,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'  # default username field
 
 
-class StrengthExercise(models.Model):
-    """Strength Exercise model"""
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-
-    dificulty_level = models.PositiveIntegerField(
-        default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(3)],
-        error_messages={
-            'min_value': 'Dificulty level must be at least 1.',
-            'max_value': 'Dificulty level cannot exceed 3.',
-        }
-    )
-
-    primary_muscle_groups = models.ManyToManyField('MuscleGroup', related_name='primary_muscle_groups')
-    secondary_muscle_groups = models.ManyToManyField('MuscleGroup', related_name='secondary_muscle_groups')
-
-    def __str__(self):
-        return self.name
-
 class MuscleGroup(models.Model):
     """Muscle Group model"""
     MUSCLE_CHOICES = [
@@ -119,6 +99,31 @@ class MuscleGroup(models.Model):
         choices=MUSCLE_CHOICES
     )
     # description = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+
+class StrengthExercise(models.Model):
+    """Strength Exercise model"""
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+
+    dificulty_level = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(3)],
+        error_messages={
+            'min_value': 'Dificulty level must be at least 1.',
+            'max_value': 'Dificulty level cannot exceed 3.',
+        }
+    )
+
+    primary_muscle_groups = models.ManyToManyField(
+                            'MuscleGroup',
+                            related_name='primary_muscle_groups')
+    secondary_muscle_groups = models.ManyToManyField(
+                            'MuscleGroup',
+                            related_name='secondary_muscle_groups')
 
     def __str__(self):
         return self.name

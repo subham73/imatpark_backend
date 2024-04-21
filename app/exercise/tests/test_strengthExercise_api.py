@@ -203,6 +203,9 @@ class PrivateStrengthExerciseApiTests(TestCase):
         self.assertFalse(StrengthExercise.objects.
                          filter(id=exercise.id).exists())
 
+    ##########################################################################
+    # primary muscle group tests
+
     def test_create_strength_exercise_with_muscle_group(self):
         """Test creating strength_exercise with new muscle_groups"""
         payload = {
@@ -246,7 +249,8 @@ class PrivateStrengthExerciseApiTests(TestCase):
         self.assertEqual(strength_exercises.count(), 1)
         strength_exercise = strength_exercises[0]
         self.assertEqual(strength_exercise.primary_muscle_groups.count(), 2)
-        self.assertIn(muscle_group_calves, strength_exercise.primary_muscle_groups.all())
+        self.assertIn(muscle_group_calves,
+                      strength_exercise.primary_muscle_groups.all())
         for muscle_group in payload['primary_muscle_groups']:
             exists = strength_exercise.primary_muscle_groups.filter(
                 name=muscle_group['name'],
@@ -257,30 +261,34 @@ class PrivateStrengthExerciseApiTests(TestCase):
         """Test creating muscle_group when updating a strength_exercise"""
         strength_exercise = create_strength_exercise()
 
-        payload = {'primary_muscle_groups':[{'name': 'legs'}]}
+        payload = {'primary_muscle_groups': [{'name': 'legs'}]}
         url = detail_url(strength_exercise.id)
         res = self.client.patch(url, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         # strength_exercise.refresh_from_db()
         new_muscle_group = MuscleGroup.objects.get(name='legs')
-        self.assertIn(new_muscle_group, strength_exercise.primary_muscle_groups.all())
+        self.assertIn(new_muscle_group,
+                      strength_exercise.primary_muscle_groups.all())
 
     def test_update_strength_exercise_assign_muscle_group(self):
-        """Test assigning an existing muscle_group when updating a strength_exercise"""
+        """Test assigning an existing muscle_group when updating a
+        strength_exercise"""
         muscle_group_core = MuscleGroup.objects.create(name='core',)
         strength_exercise = create_strength_exercise()
         strength_exercise.primary_muscle_groups.add(muscle_group_core)
 
         muscle_group_abs = MuscleGroup.objects.create(name='abs')
-        payload = {'primary_muscle_groups': [{'name': 'abs',}]}
+        payload = {'primary_muscle_groups': [{'name': 'abs'}]}
         url = detail_url(strength_exercise.id)
-        res = self.client.patch(url, payload, format='json') # bas lunch hai
+        res = self.client.patch(url, payload, format='json')
 
         # dono add ho gaye hai
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIn(muscle_group_abs, strength_exercise.primary_muscle_groups.all())
-        self.assertNotIn(muscle_group_core, strength_exercise.primary_muscle_groups.all())
+        self.assertIn(muscle_group_abs,
+                      strength_exercise.primary_muscle_groups.all())
+        self.assertNotIn(muscle_group_core,
+                         strength_exercise.primary_muscle_groups.all())
 
     def test_clear_strength_exercise_muscle_groups(self):
         """Test clearing all muscle_groups of a strength_exercise"""
@@ -294,3 +302,109 @@ class PrivateStrengthExerciseApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(strength_exercise.primary_muscle_groups.count(), 0)
+
+    ##########################################################################
+    # secondary muscle group test
+
+    def test_create_strength_exercise_with_muscle_group_two_feild(self):
+        """Test creating strength exercise with primary and secondary
+        muscle_groups"""
+        payload = {
+            'name': 'Sample strength exercise name',
+            'description': 'Sample strength exercise description',
+            'dificulty_level': 1,
+            'primary_muscle_groups': [
+                {'name': 'calves'},
+            ],
+            'secondary_muscle_groups': [
+               {'name': 'arms'},
+               {'name': 'quads'}
+            ],
+        }
+        res = self.client.post(STRENGTH_EXERCISE_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        strength_exercises = StrengthExercise.objects.all()
+        self.assertEqual(strength_exercises.count(), 1)
+        strength_exercise = strength_exercises[0]
+        self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 2)
+        for primary_muscle_group in payload['primary_muscle_groups']:
+            exists = strength_exercise.primary_muscle_groups.filter(
+                name=primary_muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+        for secondary_muscle_group in payload['secondary_muscle_groups']:
+            exists = strength_exercise.secondary_muscle_groups.filter(
+                name=secondary_muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_exercise_with_existing_muscle_groups_two_feild(self):
+        """Test creating a strength_exercise with existing muscle_groups"""
+        muscle_group_calves = MuscleGroup.objects.create(name='calves')
+        muscle_group_arms = MuscleGroup.objects.create(name='arms')
+        payload = {
+            'name': 'strength exercise name',
+            'description': 'Sample strength exercise description',
+            'dificulty_level': 1,
+            'primary_muscle_groups': [
+                {'name': 'calves'},
+            ],
+            'secondary_muscle_groups': [
+               {'name': 'arms'},
+            ],
+        }
+        res = self.client.post(STRENGTH_EXERCISE_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        strength_exercises = StrengthExercise.objects.all()
+        self.assertEqual(strength_exercises.count(), 1)
+        strength_exercise = strength_exercises[0]
+        self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
+        self.assertIn(muscle_group_calves,
+                      strength_exercise.primary_muscle_groups.all())
+        self.assertIn(muscle_group_arms,
+                      strength_exercise.secondary_muscle_groups.all())
+        for muscle_group in payload['primary_muscle_groups']:
+            exists = strength_exercise.primary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+        for muscle_group in payload['secondary_muscle_groups']:
+            exists = strength_exercise.secondary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_muscle_group_on_update_two_feild(self):
+        """Test creating muscle_group when updating a strength_exercise"""
+        strength_exercise = create_strength_exercise()
+
+        payload = {'primary_muscle_groups': [{'name': 'legs'}],
+                   'secondary_muscle_groups': [{'name': 'arms'}],
+                   }
+        url = detail_url(strength_exercise.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        # strength_exercise.refresh_from_db()
+        new_muscle_group1 = MuscleGroup.objects.get(name='legs')
+        self.assertIn(new_muscle_group1,
+                      strength_exercise.primary_muscle_groups.all())
+        new_muscle_group2 = MuscleGroup.objects.get(name='arms')
+        self.assertIn(new_muscle_group2,
+                      strength_exercise.secondary_muscle_groups.all())
+
+    def test_primary_secondary_cant_have_same_muscle_group(self):
+        """Test primary and secondary muscle_groups can't be same"""
+        strength_exercise = create_strength_exercise()
+
+        payload = {'primary_muscle_groups': [{'name': 'legs'}],
+                   'secondary_muscle_groups': [{'name': 'legs'}],
+                   }
+        url = detail_url(strength_exercise.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

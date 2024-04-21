@@ -27,7 +27,8 @@ class StrengthExerciseViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve the Strength Exercise for the authenticated user"""
-        return self.queryset.all().order_by('-id')  #add distinct and see what happens
+        return self.queryset.all().order_by('-id')
+        # add distinct at the end and see what happens
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -42,9 +43,9 @@ class StrengthExerciseViewSet(viewsets.ModelViewSet):
 
 
 class MuscleGroupViewSet(mixins.DestroyModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.ListModelMixin,
-                            viewsets.GenericViewSet):
+                         mixins.UpdateModelMixin,
+                         mixins.ListModelMixin,
+                         viewsets.GenericViewSet):
     """Manage muscle groups in the database"""
     serializer_class = serializers.MuscleGroupSerializer
     queryset = MuscleGroup.objects.all()

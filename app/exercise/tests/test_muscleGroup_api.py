@@ -10,18 +10,21 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import MuscleGroup, StrengthExercise
+from core.models import MuscleGroup
 from exercise.serializers import MuscleGroupSerializer
 
 MUSCLE_GROUP_URL = reverse('exercise:muscle-group-list')
+
 
 def detail_url(muscle_group_id):
     """Return muscle_group detail URL"""
     return reverse('exercise:muscle-group-detail', args=[muscle_group_id])
 
+
 def create_user(email="user@example.com", password="testpass123"):
     """Create and return a user"""
     return get_user_model().objects.create_user(email=email, password=password)
+
 
 def PublicMusleGroupsApiTests(TestCase):
     """Test unauthenticated API requests"""
@@ -33,6 +36,7 @@ def PublicMusleGroupsApiTests(TestCase):
         res = self.client.get(MUSCLE_GROUP_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateMusleGroupsApiTests(TestCase):
     """Test the authenticated API requests"""
@@ -47,7 +51,7 @@ class PrivateMusleGroupsApiTests(TestCase):
     #     res = self.client.get(MUSCLE_GROUP_URL)
 
     #     self.assertEqual(res.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(res.data, {'id': 1, 'name': 'legs', 'description': ''})
+    #     self.assertEqual(res.data, {'id': 1, 'name': 'legs'})
 
     def test_retrieve_muscle_group(self):
         """Test retrieving Muscle Group"""
@@ -62,6 +66,18 @@ class PrivateMusleGroupsApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    # def test_multiple_same_muslce_group(self):
+    #     """Test creating multiple muscle groups with same name"""
+    #     payload = {'name': 'legs'}
+
+    #     muscle_groups = MuscleGroup.objects.create(**payload)
+    #     res = self.client.post(MUSCLE_GROUP_URL, payload)
+    #     serializer = MuscleGroupSerializer(muscle_groups, many=True)
+    #     self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    #     res = self.client.get(MUSCLE_GROUP_URL)
+    #     self.assertIn(payload, serializer.data)
 
     def test_update_muscle_group(self):
         """Test updating a muscle_group"""
@@ -82,8 +98,8 @@ class PrivateMusleGroupsApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(MuscleGroup.objects.count(), 0)
-        #or can be written as
-        #muscle_groups = MuscleGroup.objects.filter(user=self.user)
+        # or can be written as
+        # muscle_groups = MuscleGroup.objects.filter(user=self.user)
         # self.assertFalse(muscle_groups.exists())
 
     # def test_filter_muscle_groups_assigned_to_strength_exercise(self):

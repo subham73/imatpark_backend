@@ -2,7 +2,6 @@
 Serializers for exercise API
 """
 from rest_framework import serializers
-from django.core.exceptions import ObjectDoesNotExist
 
 from core.models import (
     StrengthExercise,
@@ -24,12 +23,36 @@ class MuscleGroupSerializer(serializers.ModelSerializer):
 class StrengthExerciseSerializer(serializers.ModelSerializer):
     """ Serializer for Strength Exercise objects"""
     primary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
+    secondary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
+
     class Meta:
         model = StrengthExercise
-        fields = ('id', 'name', 'dificulty_level', 'primary_muscle_groups')
+        fields = ('id', 'name', 'dificulty_level', 'primary_muscle_groups',
+                  'secondary_muscle_groups',)
         read_only_fields = ['id']
 
-    def _get_or_create_muscle_group(self, muscle_group_data, field_name, strength_exercise):
+    def validate(self, data):
+        """
+        Custom validation to ensure that primary and secondary muscles
+        are not the same.
+        """
+        primary_muscle_groups_data = data.get('primary_muscle_groups', [])
+        secondary_muscle_groups_data = data.get('secondary_muscle_groups', [])
+
+        primary_muscle_group_names = set(mg['name'] for mg
+                                         in primary_muscle_groups_data)
+        secondary_muscle_group_names = set(mg['name'] for mg
+                                           in secondary_muscle_groups_data)
+
+        if primary_muscle_group_names & secondary_muscle_group_names:
+            raise serializers.ValidationError(
+                "Primary and secondary muscle groups must be different.")
+
+        return data
+
+    def _get_or_create_muscle_group(self, muscle_group_data,
+                                    field_name,
+                                    strength_exercise):
         """Handle getting or creating muscle groups as needed."""
         muscle_group_field = getattr(strength_exercise, field_name)
         for muscle_group_dict in muscle_group_data:
@@ -40,20 +63,38 @@ class StrengthExerciseSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and return a new Strength Exercise"""
-        primary_muscle_group_data = validated_data.pop('primary_muscle_groups', [])
+        primary_muscle_group_data = validated_data.pop(
+                                                'primary_muscle_groups', [])
+        secondary_muscle_group_data = validated_data.pop(
+                                                'secondary_muscle_groups', [])
 
         strength_exercise = StrengthExercise.objects.create(**validated_data)
-        self._get_or_create_muscle_group(primary_muscle_group_data, 'primary_muscle_groups', strength_exercise)
+        self._get_or_create_muscle_group(primary_muscle_group_data,
+                                         'primary_muscle_groups',
+                                         strength_exercise)
+        self._get_or_create_muscle_group(secondary_muscle_group_data,
+                                         'secondary_muscle_groups',
+                                         strength_exercise)
 
         return strength_exercise
 
     def update(self, instance, validated_data):
         """Update and return a Strength Exercise"""
-        primary_muscle_group_data = validated_data.pop('primary_muscle_groups', [])
+        primary_muscle_group_data = validated_data.pop(
+                                            'primary_muscle_groups', [])
+        secondary_muscle_group_data = validated_data.pop(
+                                            'secondary_muscle_groups', [])
 
         if primary_muscle_group_data is not None:
             instance.primary_muscle_groups.clear()
-            self._get_or_create_muscle_group(primary_muscle_group_data, 'primary_muscle_groups', instance)
+            self._get_or_create_muscle_group(primary_muscle_group_data,
+                                             'primary_muscle_groups',
+                                             instance)
+        if secondary_muscle_group_data is not None:
+            instance.secondary_muscle_groups.clear()
+            self._get_or_create_muscle_group(secondary_muscle_group_data,
+                                             'secondary_muscle_groups',
+                                             instance)
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

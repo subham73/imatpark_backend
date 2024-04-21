@@ -14,7 +14,6 @@ router.register('muscle-group',
                 views.MuscleGroupViewSet,
                 basename='muscle-group')
 
-
 app_name = 'exercise'
 
 urlpatterns = [
