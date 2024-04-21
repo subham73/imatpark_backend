@@ -101,8 +101,24 @@ class StrengthExercise(models.Model):
 
 class MuscleGroup(models.Model):
     """Muscle Group model"""
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
+    MUSCLE_CHOICES = [
+        ('chest', 'Chest'),
+        ('back', 'Back'),
+        ('legs', 'Legs'),
+        ('arms', 'Arms'),
+        ('shoulders', 'Shoulders'),
+        ('abs', 'Abs'),
+        ('glutes', 'Glutes'),
+        ('quads', 'Quads'),
+        ('hamstrings', 'Hamstrings'),
+        ('calves', 'Calves'),
+    ]
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        choices=MUSCLE_CHOICES
+    )
+    # description = models.TextField()
 
     def __str__(self):
         return self.name

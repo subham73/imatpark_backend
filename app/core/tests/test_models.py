@@ -156,8 +156,7 @@ class ModelTests(TestCase):
         """Test the MuscleGroup string representation"""
 
         muscle_group = models.MuscleGroup.objects.create(
-            name='Biceps',
-            description='Biceps muscle group'
+            name='hamstrings',
         )
 
         self.assertEqual(str(muscle_group), muscle_group.name)
@@ -166,8 +165,7 @@ class ModelTests(TestCase):
         """Test creating a StrengthExercise with muscle group"""
 
         muscle_group = models.MuscleGroup.objects.create(
-            name='Biceps',
-            description='Biceps muscle group'
+            name='hamstrings',
         )
 
         strength_exercise = models.StrengthExercise.objects.create(

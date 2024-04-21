@@ -52,7 +52,7 @@ class PrivateMusleGroupsApiTests(TestCase):
     def test_retrieve_muscle_group(self):
         """Test retrieving Muscle Group"""
         MuscleGroup.objects.create(name='legs')
-        MuscleGroup.objects.create(name='chest', description='chest muscles')
+        MuscleGroup.objects.create(name='calves')
 
         res = self.client.get(MUSCLE_GROUP_URL)
 
@@ -65,8 +65,8 @@ class PrivateMusleGroupsApiTests(TestCase):
 
     def test_update_muscle_group(self):
         """Test updating a muscle_group"""
-        muscle_group = MuscleGroup.objects.create(name='Chest')
-        payload = {'name': 'Legs'}
+        muscle_group = MuscleGroup.objects.create(name='calves')
+        payload = {'name': 'legs'}
         url = detail_url(muscle_group.id)
         res = self.client.patch(url, payload)
 
@@ -76,7 +76,7 @@ class PrivateMusleGroupsApiTests(TestCase):
 
     def test_delete_muscle_group(self):
         """Test deleting a muscle_group"""
-        muscle_group = MuscleGroup.objects.create(name='Chest')
+        muscle_group = MuscleGroup.objects.create(name='calves')
         url = detail_url(muscle_group.id)
         res = self.client.delete(url)
 
@@ -88,7 +88,7 @@ class PrivateMusleGroupsApiTests(TestCase):
 
     # def test_filter_muscle_groups_assigned_to_strength_exercise(self):
     #     """Test filtering muscle_groups by those assigned to recipes"""
-    #     muscle_group1 = MuscleGroup.objects.create(name='Core')
+    #     muscle_group1 = MuscleGroup.objects.create(name='calves')
     #     muscle_group2 = MuscleGroup.objects.create(name='Abs')
     #     strength_exercise = StrengthExercise.objects.create(
     #         name='Push-up',
@@ -99,13 +99,14 @@ class PrivateMusleGroupsApiTests(TestCase):
     #     res = self.client.get(MUSCLE_GROUP_URL, {'assigned_only': 1})
     #     serializer1 = MuscleGroupSerializer(muscle_group1)
     #     serializer2 = MuscleGroupSerializer(muscle_group2)
+    #     print(res.data)
     #     self.assertIn(serializer1.data, res.data)
     #     self.assertNotIn(serializer2.data, res.data)
 
     # def test_filtered_muscle_groups_assigned_unique(self):
     #     """Test filtering muscle_groups by assigned returns unique items"""
-    #     muscle_group = MuscleGroup.objects.create(name='Legs')
-    #     MuscleGroup.objects.create(name='Core')
+    #     muscle_group = MuscleGroup.objects.create(name='legs')
+    #     MuscleGroup.objects.create(name='calves')
     #     strength_exercise1 = StrengthExercise.objects.create(
     #         name='Push-up',
     #         dificulty_level=1,
@@ -118,5 +119,6 @@ class PrivateMusleGroupsApiTests(TestCase):
     #     strength_exercise2.primary_muscle_groups.add(muscle_group)
 
     #     res = self.client.get(MUSCLE_GROUP_URL, {'assigned_only': 1})
+    #     print(res.data)
     #     self.assertEqual(len(res.data), 1)
     #     self.assertEqual(res.data[0]['name'], muscle_group.name)
