@@ -10,6 +10,10 @@ router = DefaultRouter()
 router.register('strength-exercise',
                 views.StrengthExerciseViewSet,
                 basename='strength-exercise')
+router.register('muscle-group',
+                views.MuscleGroupViewSet,
+                basename='muscle-group')
+
 
 app_name = 'exercise'
 

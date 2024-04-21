@@ -93,5 +93,16 @@ class StrengthExercise(models.Model):
         }
     )
 
+    primary_muscle_groups = models.ManyToManyField('MuscleGroup', related_name='primary_muscle_groups')
+    secondary_muscle_groups = models.ManyToManyField('MuscleGroup', related_name='secondary_muscle_groups')
+
+    def __str__(self):
+        return self.name
+
+class MuscleGroup(models.Model):
+    """Muscle Group model"""
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+
     def __str__(self):
         return self.name

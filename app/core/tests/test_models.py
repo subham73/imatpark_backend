@@ -151,3 +151,36 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(strength_exercise), strength_exercise.name)
+
+    def test_create_MuscleGroup(self):
+        """Test the MuscleGroup string representation"""
+
+        muscle_group = models.MuscleGroup.objects.create(
+            name='Biceps',
+            description='Biceps muscle group'
+        )
+
+        self.assertEqual(str(muscle_group), muscle_group.name)
+
+    def test_create_StrengthExercise_with_primary_muscle_group(self):
+        """Test creating a StrengthExercise with muscle group"""
+
+        muscle_group = models.MuscleGroup.objects.create(
+            name='Biceps',
+            description='Biceps muscle group'
+        )
+
+        strength_exercise = models.StrengthExercise.objects.create(
+            name='Pull-up',
+            description='Pull-up exercise',
+            dificulty_level=2
+        )
+
+#TODO: make sure that the no same muscle group is added to both primary and secondary muscle groups
+        strength_exercise.primary_muscle_groups.add(muscle_group)
+        strength_exercise.secondary_muscle_groups.add(muscle_group)
+
+        self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
+
+#TODO: add test for checkin no duplicate muscle group is assigned to same group
