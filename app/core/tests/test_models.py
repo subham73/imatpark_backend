@@ -24,7 +24,8 @@ def create_user(email="user@example.com",
 
 class ModelTests(TestCase):
     """Test models."""
-
+##############################################################################
+# The following tests are for the User model
     def test_create_user_with_email_successful(self):
         """Test creating a new user with an email is successful"""
         email = 'test@example.com'
@@ -141,6 +142,9 @@ class ModelTests(TestCase):
                 exceptions_count += 1
         self.assertEqual(exceptions_count, len(invalid_years))
 
+##############################################################################
+# The following tests are for the User Strength Exercise model
+
     def test_create_StrengthExercise(self):
         """Test the StrengthExercise string representation"""
 
@@ -185,3 +189,34 @@ class ModelTests(TestCase):
 
 # TODO:
 # add test for checkin no duplicate muscle group is assigned to same group
+
+##############################################################################
+# The following tests are for the Track exercise model
+    def test_create_TrackExercise(self):
+        """Test the TrackExercise string representation"""
+
+        track_exercise = models.TrackExercise.objects.create(
+            name='run',
+        )
+
+        self.assertEqual(str(track_exercise), track_exercise.name)
+
+    def test_create_TrackExercise_with_pri_secondary_muscle_group(self):
+        """Test creating a TrackExercise with muscle group"""
+
+        muscle_group1 = models.MuscleGroup.objects.create(
+            name='hamstrings',
+        )
+        muscle_group2 = models.MuscleGroup.objects.create(
+            name='quads',
+        )
+
+        track_exercise = models.TrackExercise.objects.create(
+            name='walk',
+        )
+
+        track_exercise.primary_muscle_groups.add(muscle_group1)
+        track_exercise.secondary_muscle_groups.add(muscle_group2)
+
+        self.assertEqual(track_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(track_exercise.secondary_muscle_groups.count(), 1)

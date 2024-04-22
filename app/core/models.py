@@ -120,10 +120,32 @@ class StrengthExercise(models.Model):
 
     primary_muscle_groups = models.ManyToManyField(
                             'MuscleGroup',
-                            related_name='primary_muscle_groups')
+                            related_name='strength_primary_muscle_groups')
     secondary_muscle_groups = models.ManyToManyField(
                             'MuscleGroup',
-                            related_name='secondary_muscle_groups')
+                            related_name='strength_secondary_muscle_groups')
+
+    def __str__(self):
+        return self.name
+
+
+class TrackExercise(models.Model):
+    """Track Exercise model"""
+    TRACK_CHOICES = [
+        ('run', 'Running'),
+        ('walk', 'Walking'),
+        ('jog', 'Jogging'),
+    ]
+    name = models.CharField(max_length=255,
+                            unique=True,
+                            choices=TRACK_CHOICES)
+
+    primary_muscle_groups = models.ManyToManyField(
+                            'MuscleGroup',
+                            related_name='track_primary_muscle_groups')
+    secondary_muscle_groups = models.ManyToManyField(
+                            'MuscleGroup',
+                            related_name='track_secondary_muscle_groups')
 
     def __str__(self):
         return self.name
