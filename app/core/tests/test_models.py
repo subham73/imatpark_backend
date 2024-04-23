@@ -178,17 +178,11 @@ class ModelTests(TestCase):
             dificulty_level=2
         )
 
-# TODO:
-# make sure that the no same muscle group is added to both primary and
-# secondary muscle groups
         strength_exercise.primary_muscle_groups.add(muscle_group)
         strength_exercise.secondary_muscle_groups.add(muscle_group)
 
         self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
         self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
-
-# TODO:
-# add test for checkin no duplicate muscle group is assigned to same group
 
 ##############################################################################
 # The following tests are for the Track exercise model

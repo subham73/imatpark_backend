@@ -13,15 +13,13 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import (
     StrengthExercise,
     MuscleGroup,
+    TrackExercise,
 )
 
 from exercise import serializers
 
 
-class StrengthExerciseViewSet(viewsets.ModelViewSet):
-    """Manage exercises in the database"""
-    serializer_class = serializers.StrengthExerciseDetailSerializer
-    queryset = StrengthExercise.objects.all()
+class BaseExerciseViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -30,6 +28,16 @@ class StrengthExerciseViewSet(viewsets.ModelViewSet):
         return self.queryset.all().order_by('-id')
         # add distinct at the end and see what happens
 
+    def perform_create(self, serializer):
+        """Create a new exercise"""
+        serializer.save()
+
+
+class StrengthExerciseViewSet(BaseExerciseViewSet):
+    """Manage exercises in the database"""
+    serializer_class = serializers.StrengthExerciseDetailSerializer
+    queryset = StrengthExercise.objects.all()
+
     def get_serializer_class(self):
         """Return appropriate serializer class"""
         if self.action == 'list':
@@ -37,9 +45,17 @@ class StrengthExerciseViewSet(viewsets.ModelViewSet):
 
         return self.serializer_class
 
-    def perform_create(self, serializer):
-        """Create a new exercise"""
-        serializer.save()
+
+class TrackExerciseViewSet(BaseExerciseViewSet):
+    serializer_class = serializers.TrackExerciseDetailSerializer
+    queryset = TrackExercise.objects.all()
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class"""
+        if self.action == 'list':
+            return serializers.TrackExerciseSerializer
+
+        return self.serializer_class
 
 
 class MuscleGroupViewSet(mixins.DestroyModelMixin,

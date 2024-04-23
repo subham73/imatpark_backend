@@ -6,6 +6,7 @@ from rest_framework import serializers
 from core.models import (
     StrengthExercise,
     MuscleGroup,
+    TrackExercise,
 )
 
 
@@ -20,14 +21,13 @@ class MuscleGroupSerializer(serializers.ModelSerializer):
         }
 
 
-class StrengthExerciseSerializer(serializers.ModelSerializer):
-    """ Serializer for Strength Exercise objects"""
+class BaseExerciseSerializer(serializers.ModelSerializer):
+    """ Base Exercise Serializer"""
     primary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
     secondary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
 
     class Meta:
-        model = StrengthExercise
-        fields = ('id', 'name', 'dificulty_level', 'primary_muscle_groups',
+        fields = ('id', 'name', 'primary_muscle_groups',
                   'secondary_muscle_groups',)
         read_only_fields = ['id']
 
@@ -68,7 +68,7 @@ class StrengthExerciseSerializer(serializers.ModelSerializer):
         secondary_muscle_group_data = validated_data.pop(
                                                 'secondary_muscle_groups', [])
 
-        strength_exercise = StrengthExercise.objects.create(**validated_data)
+        strength_exercise = self.Meta.model.objects.create(**validated_data)
         self._get_or_create_muscle_group(primary_muscle_group_data,
                                          'primary_muscle_groups',
                                          strength_exercise)
@@ -103,9 +103,31 @@ class StrengthExerciseSerializer(serializers.ModelSerializer):
         return instance
 
 
+class StrengthExerciseSerializer(BaseExerciseSerializer):
+    """ Serializer for Strength Exercise objects"""
+    class Meta(BaseExerciseSerializer.Meta):
+        model = StrengthExercise
+        fields = BaseExerciseSerializer.Meta.fields + ('dificulty_level', )
+
+
+class TrackExerciseSerializer(BaseExerciseSerializer):
+    """ Serializer for Track Exercise objects"""
+    class Meta(BaseExerciseSerializer.Meta):
+        model = TrackExercise
+        fields = BaseExerciseSerializer.Meta.fields
+
+
 class StrengthExerciseDetailSerializer(StrengthExerciseSerializer):
     """ Serializer for strength exercise detail"""
     class Meta(StrengthExerciseSerializer.Meta):
         '''comma is neccessary here with out it will be a string
           and with, its a tuple eg. ('description', 'image')'''
         fields = StrengthExerciseSerializer.Meta.fields + ('description', )
+
+
+class TrackExerciseDetailSerializer(TrackExerciseSerializer):
+    """ Serializer for strength exercise detail"""
+    class Meta(TrackExerciseSerializer.Meta):
+        '''comma is neccessary here with out it will be a string
+          and with, its a tuple eg. ('description', 'image')'''
+        fields = TrackExerciseSerializer.Meta.fields

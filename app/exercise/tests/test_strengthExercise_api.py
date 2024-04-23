@@ -1,5 +1,5 @@
 """
-Test for exercise APIs
+Test for strength exercise APIs
 """
 # from decimal import Decimal
 # import os
@@ -13,6 +13,7 @@ from rest_framework.test import APIClient
 from core.models import (
     StrengthExercise,
     MuscleGroup,
+    TrackExercise
 )
 
 from exercise.serializers import (
@@ -21,6 +22,7 @@ from exercise.serializers import (
 )
 
 STRENGTH_EXERCISE_URL = reverse('exercise:strength-exercise-list')
+TRACK_EXERCISE_URL = reverse('exercise:track-exercise-list')
 
 
 def detail_url(exercise_id):
@@ -408,3 +410,123 @@ class PrivateStrengthExerciseApiTests(TestCase):
         res = self.client.patch(url, payload, format='json')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+##############################################################################
+# test any conflit between muscle groups when present in  strength and track
+    def test_create_strengthEx_existing_trackEx_muscleGs(self):
+        """Test creating strength exercise with existing track exercise
+        muscle groups"""
+        payload_Track = {
+            'name': 'run',
+            'primary_muscle_groups': [
+                {'name': 'arms'},
+            ],
+            'secondary_muscle_groups': [
+               {'name': 'calves'},
+            ],
+        }
+        # checks if the track exercise is created
+        res = self.client.post(TRACK_EXERCISE_URL,
+                               payload_Track,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        track_exercises = TrackExercise.objects.all()
+        self.assertEqual(track_exercises.count(), 1)
+        track_exercise = track_exercises[0]
+        self.assertEqual(track_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(track_exercise.secondary_muscle_groups.count(), 1)
+        # checks if the muscle groups are created
+        for muscle_group in payload_Track['primary_muscle_groups']:
+            exists = track_exercise.primary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+        for muscle_group in payload_Track['secondary_muscle_groups']:
+            exists = track_exercise.secondary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+
+        payload_Strength = {
+            'name': 'strength exercise name',
+            'description': 'Sample strength exercise description',
+            'dificulty_level': 1,
+            'primary_muscle_groups': [
+                {'name': 'calves'},
+            ],
+            'secondary_muscle_groups': [
+                {'name': 'arms'},
+            ]
+        }
+        # checks if the strength exercise is created
+        res = self.client.post(STRENGTH_EXERCISE_URL,
+                               payload_Strength,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        strength_exercises = StrengthExercise.objects.all()
+        self.assertEqual(strength_exercises.count(), 1)
+        strength_exercise = strength_exercises[0]
+        self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
+        # checks if the muscle groups are created
+        for muscle_group in payload_Strength['primary_muscle_groups']:
+            exists = strength_exercise.primary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+        for muscle_group in payload_Strength['secondary_muscle_groups']:
+            exists = strength_exercise.secondary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+
+        # checks if the 2 muscle groups are prsent in the database
+        muscle_group_arms = MuscleGroup.objects.all()
+        self.assertEqual(muscle_group_arms.count(), 2)
+
+    def test_update_strengthEx_existing_trackEx_muscleGs(self):
+        """Test updating track exercise with existing strength exercise
+        muscle groups"""
+        strength_exercise = create_strength_exercise()
+
+        # creating a track exercising
+        payload_Track = {
+            'name': 'run',
+            'primary_muscle_groups': [
+                {'name': 'calves'},
+            ],
+            'secondary_muscle_groups': [
+                {'name': 'arms'},
+            ]
+        }
+        # checks if the strength exercise is created
+        res = self.client.post(TRACK_EXERCISE_URL,
+                               payload_Track,
+                               format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # updating the track exercise
+        payload_Exercise = {'primary_muscle_groups': [{'name': 'calves'}],
+                            'secondary_muscle_groups': [{'name': 'arms'}],
+                            }
+        url = detail_url(strength_exercise.id)
+        res = self.client.patch(url, payload_Exercise, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        # track_exercise.refresh_from_db()
+        strength_exercises = StrengthExercise.objects.all()
+        self.assertEqual(strength_exercises.count(), 1)
+        strength_exercise = strength_exercises[0]
+        self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
+        self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
+        # checks if the muscle groups are created
+        for muscle_group in payload_Track['primary_muscle_groups']:
+            exists = strength_exercise.primary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
+        for muscle_group in payload_Track['secondary_muscle_groups']:
+            exists = strength_exercise.secondary_muscle_groups.filter(
+                name=muscle_group['name'],
+            ).exists()
+            self.assertTrue(exists)
