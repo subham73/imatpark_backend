@@ -4,7 +4,7 @@ Database Models
 # import uuid
 # import os
 
-# from django.conf import settings
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -149,3 +149,49 @@ class TrackExercise(models.Model):
 
     def __str__(self):
         return self.name
+
+class BaseExerciseLog(models.Model):
+    """base Log model for exercise"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    #TODO: add date and time field
+
+    calories_burned = models.PositiveIntegerField()
+
+    class Meta:
+        abstract = True
+
+
+class StrengthExerciseLog(BaseExerciseLog):
+    """Strength Exercise Log model"""
+    exercise = models.ForeignKey('StrengthExercise', on_delete=models.CASCADE)
+    reps = models.PositiveIntegerField(
+        default=10,
+        validators=[MinValueValidator(1), MaxValueValidator(50)],
+        error_messages={
+            'min_value': 'Reps must be at least 1.',
+            'max_value': 'Reps cannot exceed 50.',
+        }
+    )
+    sets = models.PositiveIntegerField(default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(50)],
+        error_messages={
+            'min_value': 'Reps must be at least 1.',
+            'max_value': 'Reps cannot exceed 50.',
+        }
+    )
+    def __str__(self):
+        return f'{self.user} - {self.exercise}'
+
+# class TrackExerciseLog(BaseExerciseLog):
+#     """Track ExerciseLog model"""
+#     exercise = models.ForeignKey('TrackExercise', on_delete=models.CASCADE)
+#     distance = models.DecimalField(
+#         default=0.0,
+#         max_digits=5,
+#     )
+#     steps = models.PositiveIntegerField(
+#         default=0,
+#     )

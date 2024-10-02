@@ -27,7 +27,7 @@ class BaseExerciseSerializer(serializers.ModelSerializer):
     secondary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
 
     class Meta:
-        fields = ('id', 'name', 'primary_muscle_groups',
+        fields = ('id', 'primary_muscle_groups',
                   'secondary_muscle_groups',)
         read_only_fields = ['id']
 
@@ -107,14 +107,14 @@ class StrengthExerciseSerializer(BaseExerciseSerializer):
     """ Serializer for Strength Exercise objects"""
     class Meta(BaseExerciseSerializer.Meta):
         model = StrengthExercise
-        fields = BaseExerciseSerializer.Meta.fields + ('dificulty_level', )
+        fields = BaseExerciseSerializer.Meta.fields + ('name', 'dificulty_level', )
 
 
 class TrackExerciseSerializer(BaseExerciseSerializer):
     """ Serializer for Track Exercise objects"""
     class Meta(BaseExerciseSerializer.Meta):
         model = TrackExercise
-        fields = BaseExerciseSerializer.Meta.fields
+        fields = BaseExerciseSerializer.Meta.fields + ('name', )
 
 
 class StrengthExerciseDetailSerializer(StrengthExerciseSerializer):

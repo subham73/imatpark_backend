@@ -9,8 +9,10 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from core import models
 
-from datetime import datetime
-current_year = datetime.now().year
+from datetime import datetime as dt
+import datetime
+
+current_year = dt.now().year
 
 
 def create_user(email="user@example.com",
@@ -214,3 +216,117 @@ class ModelTests(TestCase):
 
         self.assertEqual(track_exercise.primary_muscle_groups.count(), 1)
         self.assertEqual(track_exercise.secondary_muscle_groups.count(), 1)
+
+##############################################################################
+# The following tests are for the strength Exercise Log
+
+    # def test_create_StrengthExerciseLog(self):
+    #     user=get_user_model().objects.create_user(
+    #             email='user@example.com',
+    #             password='pass@123',
+    #         )
+    #     strength_exercise=models.StrengthExercise.objects.create(
+    #             name='Pull-up',
+    #             description='Pull-up exercise',
+    #             dificulty_level=2
+    #             )
+    #     date = datetime.date.today()
+    #     strength_exercise_log = models.StrengthExerciseLog.objects.create(
+    #         user=user,
+    #         exercise=strength_exercise,
+    #         sets=3,
+    #         reps=10,
+    #         calories_burned=100,
+    #     )
+
+    #     expected_output = f'{user.email} - {strength_exercise.name} - {date}'
+    #     self.assertEqual(str(strength_exercise_log), expected_output)
+
+
+
+
+
+# class ExerciseLogTests(TestCase):
+#     """Test the ExerciseLog model"""
+#     def setUp(self):
+#         email = 'user@example.com'
+#         password = "pass@123"
+#         self.user = get_user_model().objects.create_user(
+#                 email=email,
+#                 password=password,
+#             )
+#         self.strength_exercise = models.StrengthExercise.objects.create(
+#             name='Pull-up',
+#             description='Pull-up exercise',
+#             # difficulty_level=2
+#         )
+#         self.date = datetime.date.today()
+
+#     def test_create_StrengthExerciseLog(self):
+#         strength_exercise_log = models.StrengthExerciseLog.objects.create(
+#             user=self.user,
+#             exercise=self.strength_exercise,
+#             sets=3,
+#             reps=10,
+#             date=self.date,
+#         )
+
+#         expected_output = f'{self.user.email} - {self.strength_exercise.name} - {self.date}'
+#         self.assertEqual(str(strength_exercise_log), expected_output)
+
+        # def test_create_StrengthExerciseLog_with_invalid_sets_reps_weight(self):
+        #     """Test creating a StrengthExerciseLog with invalid sets, reps and weight"""
+
+        #     user = create_user()
+        #     strength_exercise = models.StrengthExercise.objects.create(
+        #         name='Pull-up',
+        #         description='Pull-up exercise',
+        #         dificulty_level=2
+        #     )
+
+        #     invalid_sets_reps_weight = [
+        #         [0, 0, 0],
+        #         [-1, -2, -3],
+        #         [0, 10, 20],
+        #         [3, 0, 20],
+        #         [3, 10, 0],
+        #         [3, 10, -1],
+        #         [3, -1, 20],
+        #         [-1, 10, 20],
+        #     ]
+
+        #     exceptions_count = 0
+        #     for sets, reps, weight in invalid_sets_reps_weight:
+        #         try:
+        #             models.StrengthExerciseLog.objects.create(
+        #                 user=user,
+        #                 exercise=strength_exercise,
+        #                 sets=sets,
+        #                 reps=reps,
+        #                 weight=weight,
+        #             )
+        #         except ValidationError:
+        #             exceptions_count += 1
+        #     self.assertEqual(exceptions_count, len(invalid_sets_reps_weight)
+
+        # def test_create_StrengthExerciseLog_with_invalid_date(self):
+        #     """Test creating a StrengthExerciseLog with invalid date"""
+
+        #     user = create_user()
+        #     strength_exercise = models.StrengthExercise.objects.create(
+        #         name='Pull-up',
+        #         description='Pull-up exercise',
+        #         dificulty_level=2
+        #     )
+
+        #     invalid_dates = [
+        #         datetime.now().date() + timedelta(days=1),
+        #         datetime.now().date() - timedelta(days=1),
+        #     ]
+
+        #     exceptions_count = 0
+        #     for date in invalid_dates:
+        #         try:
+        #             models.StrengthExerciseLog.objects.create(
+        #                 user=user,
+        #                 exercise=strength

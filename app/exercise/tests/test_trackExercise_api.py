@@ -163,7 +163,6 @@ class PrivateTrackExerciseApiTests(TestCase):
             ],
         }
         res = self.client.post(TRACK_EXERCISE_URL, payload, format='json')
-        print(res.data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         track_exercises = TrackExercise.objects.all()
         self.assertEqual(track_exercises.count(), 1)
@@ -195,7 +194,6 @@ class PrivateTrackExerciseApiTests(TestCase):
             ],
         }
         res = self.client.post(TRACK_EXERCISE_URL, payload, format='json')
-        print(res.data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         track_exercises = TrackExercise.objects.all()
         self.assertEqual(track_exercises.count(), 1)
