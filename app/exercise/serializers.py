@@ -7,6 +7,7 @@ from core.models import (
     StrengthExercise,
     MuscleGroup,
     TrackExercise,
+    StrengthExerciseLog,
 )
 
 
@@ -131,3 +132,36 @@ class TrackExerciseDetailSerializer(TrackExerciseSerializer):
         '''comma is neccessary here with out it will be a string
           and with, its a tuple eg. ('description', 'image')'''
         fields = TrackExerciseSerializer.Meta.fields
+
+
+class BaseExerciseLogSerializer(serializers.ModelSerializer):
+    """Base Exercise Log Serializer"""
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        fields = ('id', 'user', 'timestamp', 'calories_burned')
+        read_only_fields = ['id', 'user', 'timestamp']
+
+class StrengthExerciseLogSerializer(BaseExerciseLogSerializer):
+    """Serializer for Strength Exercise Log"""
+    exercise = serializers.SlugRelatedField(
+        queryset=StrengthExercise.objects.all(),
+        slug_field='name'
+    )
+
+    class Meta(BaseExerciseLogSerializer.Meta):
+        model = StrengthExerciseLog
+        fields = BaseExerciseLogSerializer.Meta.fields + ('exercise', 'reps', 'sets', )
+
+    def create(self, validated_data):
+        """Create and return a new Strength Exercise Log"""
+        strength_exercise_log = self.Meta.model.objects.create(**validated_data)
+        return strength_exercise_log
+
+    def update(self, instance, validated_data):
+        """Update and return a Strength Exercise Log"""
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
