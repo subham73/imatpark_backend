@@ -7,6 +7,7 @@ from core.models import (
     StrengthExercise,
     MuscleGroup,
     TrackExercise,
+    StrengthExerciseLog,
 )
 
 
@@ -27,7 +28,7 @@ class BaseExerciseSerializer(serializers.ModelSerializer):
     secondary_muscle_groups = MuscleGroupSerializer(many=True, required=False)
 
     class Meta:
-        fields = ('id', 'name', 'primary_muscle_groups',
+        fields = ('id', 'primary_muscle_groups',
                   'secondary_muscle_groups',)
         read_only_fields = ['id']
 
@@ -107,14 +108,15 @@ class StrengthExerciseSerializer(BaseExerciseSerializer):
     """ Serializer for Strength Exercise objects"""
     class Meta(BaseExerciseSerializer.Meta):
         model = StrengthExercise
-        fields = BaseExerciseSerializer.Meta.fields + ('dificulty_level', )
+        fields = BaseExerciseSerializer.Meta.fields + \
+            ('name', 'dificulty_level', )
 
 
 class TrackExerciseSerializer(BaseExerciseSerializer):
     """ Serializer for Track Exercise objects"""
     class Meta(BaseExerciseSerializer.Meta):
         model = TrackExercise
-        fields = BaseExerciseSerializer.Meta.fields
+        fields = BaseExerciseSerializer.Meta.fields + ('name', )
 
 
 class StrengthExerciseDetailSerializer(StrengthExerciseSerializer):
@@ -131,3 +133,39 @@ class TrackExerciseDetailSerializer(TrackExerciseSerializer):
         '''comma is neccessary here with out it will be a string
           and with, its a tuple eg. ('description', 'image')'''
         fields = TrackExerciseSerializer.Meta.fields
+
+
+class BaseExerciseLogSerializer(serializers.ModelSerializer):
+    """Base Exercise Log Serializer"""
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        fields = ('id', 'user', 'timestamp', 'calories_burned')
+        read_only_fields = ['id', 'user', 'timestamp']
+
+
+class StrengthExerciseLogSerializer(BaseExerciseLogSerializer):
+    """Serializer for Strength Exercise Log"""
+    exercise = serializers.SlugRelatedField(
+        queryset=StrengthExercise.objects.all(),
+        slug_field='name'
+    )
+
+    class Meta(BaseExerciseLogSerializer.Meta):
+        model = StrengthExerciseLog
+        fields = BaseExerciseLogSerializer.Meta.fields + \
+            ('exercise', 'reps', 'sets', )
+
+    def create(self, validated_data):
+        """Create and return a new Strength Exercise Log"""
+        strength_exercise_log = self.Meta.model.objects.create(
+                                **validated_data)
+        return strength_exercise_log
+
+    def update(self, instance, validated_data):
+        """Update and return a Strength Exercise Log"""
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance

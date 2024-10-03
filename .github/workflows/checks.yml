@@ -1,7 +1,7 @@
 ---
 name: Checks
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test-lint:
@@ -15,8 +15,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
       - name: Test
-        run: docker-compose run --rm app sh -c "python manage.py wait_for_db &&
-                                                python manage.py test"
+        run: docker-compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
       - name: Lint
         run: docker-compose run --rm app sh -c "flake8"

@@ -9,8 +9,9 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from core import models
 
-from datetime import datetime
-current_year = datetime.now().year
+from datetime import datetime as dt
+
+current_year = dt.now().year
 
 
 def create_user(email="user@example.com",
@@ -165,11 +166,14 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(muscle_group), muscle_group.name)
 
-    def test_create_StrengthExercise_with_primary_muscle_group(self):
+    def test_create_StrengthExercise_with_MuscleGroup(self):
         """Test creating a StrengthExercise with muscle group"""
 
-        muscle_group = models.MuscleGroup.objects.create(
+        muscle_group1 = models.MuscleGroup.objects.create(
             name='hamstrings',
+        )
+        muscle_group2 = models.MuscleGroup.objects.create(
+            name='chest',
         )
 
         strength_exercise = models.StrengthExercise.objects.create(
@@ -178,11 +182,37 @@ class ModelTests(TestCase):
             dificulty_level=2
         )
 
-        strength_exercise.primary_muscle_groups.add(muscle_group)
-        strength_exercise.secondary_muscle_groups.add(muscle_group)
+        strength_exercise.primary_muscle_groups.add(muscle_group1)
+        strength_exercise.secondary_muscle_groups.add(muscle_group2)
 
         self.assertEqual(strength_exercise.primary_muscle_groups.count(), 1)
         self.assertEqual(strength_exercise.secondary_muscle_groups.count(), 1)
+
+# TODO: add test after implemenenting non
+#       overlapping primary and secondary muscle group
+    # def test_create_StrengthExercise_invalid_same_pri&sec_MuscleGroups(
+    # self
+    # ):
+    #     """
+    #       Test creating a StrengthExercise with
+    #       same muscle group as primary and secondary
+    #    """
+
+    #     muscle_group = models.MuscleGroup.objects.create(
+    #         name='hamstrings',
+    #     )
+
+    #     strength_exercise = models.StrengthExercise.objects.create(
+    #         name='Pull-up',
+    #         description='Pull-up exercise',
+    #         dificulty_level=2
+    #     )
+
+    #     strength_exercise.primary_muscle_groups.add(muscle_group)
+    #     strength_exercise.secondary_muscle_groups.add(muscle_group)
+
+    #     with self.assertRaises(ValidationError):
+    #         strength_exercise.full_clean()
 
 ##############################################################################
 # The following tests are for the Track exercise model
@@ -195,7 +225,7 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(track_exercise), track_exercise.name)
 
-    def test_create_TrackExercise_with_pri_secondary_muscle_group(self):
+    def test_create_TrackExercise_with_primary_secondary_muscle_group(self):
         """Test creating a TrackExercise with muscle group"""
 
         muscle_group1 = models.MuscleGroup.objects.create(
@@ -214,3 +244,61 @@ class ModelTests(TestCase):
 
         self.assertEqual(track_exercise.primary_muscle_groups.count(), 1)
         self.assertEqual(track_exercise.secondary_muscle_groups.count(), 1)
+
+# TODO: add test after implemenenting non
+#       overlapping primary and secondary muscle group
+    # def test_create_TrackExercise_invalid_same_pri&sec_MuscleGroups(
+    #  self
+    # ):
+    #     """Test creating a StrengthExercise with
+    #           same muscle group as primary and secondary"""
+
+    #     muscle_group = models.MuscleGroup.objects.create(
+    #         name='hamstrings',
+    #     )
+
+    #     track_exercise = models.TrackExercise.objects.create(
+    #         name='walk',
+    #     )
+
+    #     track_exercise.primary_muscle_groups.add(muscle_group)
+    #     track_exercise.secondary_muscle_groups.add(muscle_group)
+
+    #     with self.assertRaises(ValidationError):
+    #         track_exercise.full_clean()
+
+##############################################################################
+# The following tests are for the strength Exercise Log
+
+    def test_create_StrengthExerciseLog(self):
+        user = get_user_model().objects.create_user(
+                email='user@ .com',
+                password='pass@123',
+            )
+        strength_exercise = models.StrengthExercise.objects.create(
+                name='Pull-up',
+                description='Pull-up exercise',
+                dificulty_level=2
+                )
+
+        strength_exercise_log = models.StrengthExerciseLog.objects.create(
+            user=user,
+            exercise=strength_exercise,
+            sets=3,
+            reps=10,
+            calories_burned=100,
+        )
+
+        expected_output = (
+            f'{strength_exercise.name}_'
+            f'{strength_exercise_log.timestamp.strftime("%Y-%m-%d %H:%M:%S")}'
+        )
+
+        # Assertions
+        self.assertEqual(str(strength_exercise_log), expected_output)
+        self.assertEqual(strength_exercise_log.user, user)
+        self.assertEqual(strength_exercise_log.exercise, strength_exercise)
+        self.assertEqual(strength_exercise_log.sets, 3)
+        self.assertEqual(strength_exercise_log.reps, 10)
+        self.assertEqual(strength_exercise_log.calories_burned, 100)
+        self.assertIsNotNone(strength_exercise_log.timestamp)

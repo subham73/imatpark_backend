@@ -14,6 +14,7 @@ from core.models import (
     StrengthExercise,
     MuscleGroup,
     TrackExercise,
+    StrengthExerciseLog,
 )
 
 from exercise import serializers
@@ -71,3 +72,19 @@ class MuscleGroupViewSet(mixins.DestroyModelMixin,
     def get_queryset(self):
         """Retrieve the muscle groups for the authenticated user"""
         return self.queryset.all()
+
+
+class StrengthExerciseLogViewSet(viewsets.ModelViewSet):
+    """Manage exercise logs in the database"""
+    serializer_class = serializers.StrengthExerciseLogSerializer
+    queryset = StrengthExerciseLog.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Retrieve the exercise logs for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        """Create a new exercise log"""
+        serializer.save(user=self.request.user)

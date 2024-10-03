@@ -16,6 +16,9 @@ router.register('muscle-group',
 router.register('track-exercise',
                 views.TrackExerciseViewSet,
                 basename='track-exercise')
+router.register('strength-exercise-log',
+                views.StrengthExerciseLogViewSet,
+                basename='strength-exercise-log')
 
 app_name = 'exercise'
 
