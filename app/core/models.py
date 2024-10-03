@@ -4,6 +4,7 @@ Database Models
 # import uuid
 # import os
 
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import (
@@ -12,6 +13,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 
 from datetime import datetime
 current_year = datetime.now().year
@@ -103,7 +105,6 @@ class MuscleGroup(models.Model):
     def __str__(self):
         return self.name
 
-
 class StrengthExercise(models.Model):
     """Strength Exercise model"""
     name = models.CharField(max_length=255, unique=True)
@@ -156,10 +157,10 @@ class BaseExerciseLog(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    #TODO: add date and time field
+    timestamp = models.DateTimeField(
+            default=timezone.now)
 
     calories_burned = models.PositiveIntegerField()
-
     class Meta:
         abstract = True
 
@@ -183,15 +184,21 @@ class StrengthExerciseLog(BaseExerciseLog):
         }
     )
     def __str__(self):
-        return f'{self.user} - {self.exercise}'
+        return f"{self.exercise}_{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
 
-# class TrackExerciseLog(BaseExerciseLog):
-#     """Track ExerciseLog model"""
-#     exercise = models.ForeignKey('TrackExercise', on_delete=models.CASCADE)
-#     distance = models.DecimalField(
-#         default=0.0,
-#         max_digits=5,
-#     )
-#     steps = models.PositiveIntegerField(
-#         default=0,
-#     )
+class TrackExerciseLog(BaseExerciseLog):
+    """Track ExerciseLog model"""
+    exercise = models.ForeignKey('TrackExercise', on_delete=models.CASCADE)
+    distance = models.DecimalField(
+        default=0.0,
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0.0)],
+        error_messages={
+            'min_value': 'Distance must be at least 0.0.',
+        }
+    )
+    pace = models.DurationField()
+
+    def __str__(self):
+        return f"{self.exercise}_{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
