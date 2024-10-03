@@ -108,7 +108,8 @@ class StrengthExerciseSerializer(BaseExerciseSerializer):
     """ Serializer for Strength Exercise objects"""
     class Meta(BaseExerciseSerializer.Meta):
         model = StrengthExercise
-        fields = BaseExerciseSerializer.Meta.fields + ('name', 'dificulty_level', )
+        fields = BaseExerciseSerializer.Meta.fields + \
+            ('name', 'dificulty_level', )
 
 
 class TrackExerciseSerializer(BaseExerciseSerializer):
@@ -142,6 +143,7 @@ class BaseExerciseLogSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'timestamp', 'calories_burned')
         read_only_fields = ['id', 'user', 'timestamp']
 
+
 class StrengthExerciseLogSerializer(BaseExerciseLogSerializer):
     """Serializer for Strength Exercise Log"""
     exercise = serializers.SlugRelatedField(
@@ -151,11 +153,13 @@ class StrengthExerciseLogSerializer(BaseExerciseLogSerializer):
 
     class Meta(BaseExerciseLogSerializer.Meta):
         model = StrengthExerciseLog
-        fields = BaseExerciseLogSerializer.Meta.fields + ('exercise', 'reps', 'sets', )
+        fields = BaseExerciseLogSerializer.Meta.fields + \
+            ('exercise', 'reps', 'sets', )
 
     def create(self, validated_data):
         """Create and return a new Strength Exercise Log"""
-        strength_exercise_log = self.Meta.model.objects.create(**validated_data)
+        strength_exercise_log = self.Meta.model.objects.create(
+                                **validated_data)
         return strength_exercise_log
 
     def update(self, instance, validated_data):

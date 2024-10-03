@@ -12,7 +12,7 @@ from rest_framework.test import APIClient
 from core.models import (
     StrengthExercise,
     StrengthExerciseLog,
-    TrackExerciseLog,
+    # TrackExerciseLog,
 )
 
 from exercise.serializers import (
@@ -22,6 +22,7 @@ from exercise.serializers import (
 
 STRENGTH_EXERCISE_LOG_URL = reverse('exercise:strength-exercise-log-list')
 # TRACK_EXERCISE_LOG_URL = reverse('exercise:track-exercise-log-list')
+
 
 def create_strength_exercise(**params):
     """Create and return a sample strength exercise"""
@@ -35,9 +36,11 @@ def create_strength_exercise(**params):
     strength_exercise = StrengthExercise.objects.create(**defaults)
     return strength_exercise
 
+
 def create_user(**params):
     """Create and return a sample user"""
     return get_user_model().objects.create_user(**params)
+
 
 class PublicStregthExerciseLogApiTests(TestCase):
     """"Test unautheticated exercise Log Api access"""
@@ -48,6 +51,7 @@ class PublicStregthExerciseLogApiTests(TestCase):
         """Test that authentication is required"""
         res = self.client.get(STRENGTH_EXERCISE_LOG_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateStrengthExerciseLogApiTests(TestCase):
     """Test authenticated exercise Log API access"""

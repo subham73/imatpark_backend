@@ -13,7 +13,6 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 from datetime import datetime
 current_year = datetime.now().year
@@ -105,6 +104,7 @@ class MuscleGroup(models.Model):
     def __str__(self):
         return self.name
 
+
 class StrengthExercise(models.Model):
     """Strength Exercise model"""
     name = models.CharField(max_length=255, unique=True)
@@ -151,6 +151,7 @@ class TrackExercise(models.Model):
     def __str__(self):
         return self.name
 
+
 class BaseExerciseLog(models.Model):
     """base Log model for exercise"""
     user = models.ForeignKey(
@@ -161,6 +162,7 @@ class BaseExerciseLog(models.Model):
             default=timezone.now)
 
     calories_burned = models.PositiveIntegerField()
+
     class Meta:
         abstract = True
 
@@ -176,15 +178,21 @@ class StrengthExerciseLog(BaseExerciseLog):
             'max_value': 'Reps cannot exceed 50.',
         }
     )
-    sets = models.PositiveIntegerField(default=1,
-        validators=[MinValueValidator(1), MaxValueValidator(50)],
-        error_messages={
-            'min_value': 'Reps must be at least 1.',
-            'max_value': 'Reps cannot exceed 50.',
-        }
-    )
+    sets = models.PositiveIntegerField(
+            default=1,
+            validators=[MinValueValidator(1), MaxValueValidator(50)],
+            error_messages={
+                'min_value': 'Reps must be at least 1.',
+                'max_value': 'Reps cannot exceed 50.',
+            }
+        )
+
     def __str__(self):
-        return f"{self.exercise}_{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        return (
+            f"{self.exercise}_"
+            f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
+
 
 class TrackExerciseLog(BaseExerciseLog):
     """Track ExerciseLog model"""
@@ -201,4 +209,7 @@ class TrackExerciseLog(BaseExerciseLog):
     pace = models.DurationField()
 
     def __str__(self):
-        return f"{self.exercise}_{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        return (
+            f"{self.exercise}_"
+            f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
