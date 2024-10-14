@@ -1,7 +1,7 @@
 """
 Views for the user API
 """
-from requests import Response
+# from requests import Response
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
@@ -38,9 +38,9 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 # TEXT ANALYTICS API
 
 
-class UserLogAnalyticsView(APIView):
-    permission_classes = [IsAuthenticated]
+# class UserLogAnalyticsView(APIView):
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        analytics = get_user_log_analytics(request.user)
-        return Response(analytics)
+#     def get(self, request):
+#         analytics = get_user_log_analytics(request.user)
+#         return Response(analytics)
