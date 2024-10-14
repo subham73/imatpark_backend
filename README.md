@@ -112,7 +112,7 @@ docker-compose run --rm app sh -c "flake8"
     git pull upstream main
     git push origin <BRANCH_NAME>
     ```
-10. Congrats you did it 🎉
+Congrats you did it 🎉
 
 
 

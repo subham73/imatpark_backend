@@ -2,7 +2,7 @@
 .docker/
 
 #env file
-.env.dev
+.env.dev/
 
 # Python
 __pycache__/
