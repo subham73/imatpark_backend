@@ -23,6 +23,7 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           SQL_ENGINE: ${{ secrets.SQL_ENGINE }}
+          SQL_DATABASE: ${{ secrets.SQL_DATABASE }}
           SQL_NAME: ${{ secrets.SQL_NAME }}
           SQL_USER: ${{ secrets.SQL_USER }}
           SQL_PASSWORD: ${{ secrets.SQL_PASSWORD }}
