@@ -24,10 +24,18 @@ services:
       postgres:16
     volumes:
       - dev-db-data:/var/lib/postgresql/data
+    # environment:
+    #   - POSTGRES_DB=devdb
+    #   - POSTGRES_USER=devuser
+    #   - POSTGRES_PASSWORD=devpass
     environment:
-      - POSTGRES_DB=devdb
+      - SECRET_KEY=${SECRET_KEY}
+      - SQL_ENGINE=${SQL_ENGINE}
+      - DATABASE=${SQL_DATABASE}
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+      - DB_HOST=${SQL_HOST}
+      - DB_PORT=${SQL_PORT}
 
 volumes:
   dev-db-data:
