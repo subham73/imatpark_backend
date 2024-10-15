@@ -5,3 +5,4 @@ exclude =
     backend/settings.py,
     backend/__pycache__,
     manage.py,
+    README.md,

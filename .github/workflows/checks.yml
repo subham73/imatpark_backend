@@ -8,13 +8,24 @@ jobs:
     name: Test and Lint
     runs-on: ubuntu-20.04
     steps:
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Create .env.dev file
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env.dev
+          echo "SQL_ENGINE=${{ secrets.SQL_ENGINE }}" >> .env.dev
+          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env.dev
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env.dev
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env.dev
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env.dev
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env.dev
       - name: Set up Docker Compose
         run: |
           curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
