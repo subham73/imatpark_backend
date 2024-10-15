@@ -12,5 +12,5 @@ urlpatterns = [
     path('token/', views.CreateTokenView.as_view(), name='token'),
     path('me/', views.ManageUserView.as_view(), name='me'),
     # path('analytics/', views.UserLogAnalyticsView.as_view(),
-        #  name='user-log-analytics'),
+    #  name='user-log-analytics'),
 ]
