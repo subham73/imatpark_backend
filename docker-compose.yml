@@ -24,12 +24,6 @@ services:
       postgres:16
     volumes:
       - dev-db-data:/var/lib/postgresql/data
-    env_file:
-      - ./.env.dev
-    # environment:
-    #   - POSTGRES_DB=${SQL_DATABASE}
-    #   - POSTGRES_USER=${SQL_USER}
-    #   - POSTGRES_PASSWORD=${SQL_PASSWORD}
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
