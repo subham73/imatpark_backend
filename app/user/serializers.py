@@ -58,3 +58,9 @@ class AuthTokenSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg, code='authentication')
         attrs['user'] = user
         return attrs
+
+
+class UserLogAnalyticsSerializer(serializers.Serializer):
+    total_reps = serializers.IntegerField()
+    total_sets = serializers.IntegerField()
+    total_calories_burned = serializers.IntegerField()

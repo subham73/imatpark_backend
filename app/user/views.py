@@ -2,6 +2,7 @@
 Views for the user API
 """
 # from requests import Response
+from .analytics.services import get_user_log_analytics
 from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
@@ -10,7 +11,11 @@ from rest_framework.settings import api_settings
 # from user.analytics.services import get_user_log_analytics
 # from rest_framework.views import APIView
 
-from user.serializers import UserSerializer, AuthTokenSerializer
+from user.serializers import (
+    UserLogAnalyticsSerializer,
+    UserSerializer,
+    AuthTokenSerializer,
+)
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -38,9 +43,9 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 # TEXT ANALYTICS API
 
 
-# class UserLogAnalyticsView(APIView):
-#     permission_classes = [IsAuthenticated]
+class UserLogAnalyticsView(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserLogAnalyticsSerializer
 
-#     def get(self, request):
-#         analytics = get_user_log_analytics(request.user)
-#         return Response(analytics)
+    def get_object(self):
+        return get_user_log_analytics(self.request.user)
