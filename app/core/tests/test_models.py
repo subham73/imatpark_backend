@@ -4,6 +4,7 @@ Tests for models
 # from unittest.mock import patch
 # from decimal import Decimal
 
+from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -213,6 +214,16 @@ class ModelTests(TestCase):
 
     #     with self.assertRaises(ValidationError):
     #         strength_exercise.full_clean()
+
+    @patch('core.models.uuid.uuid4')
+    def test_stExercise_file_name_uuid(self, mock_uuid):
+        """Test the file name for the strength exercise image"""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.strengthExercise_image_file_path(None, 'exmp.jpg')
+
+        expected_path = f'uploads/strength_exercise/{uuid}.jpg'
+        self.assertEqual(file_path, expected_path)
 
 ##############################################################################
 # The following tests are for the Track exercise model

@@ -19,6 +19,7 @@ RUN python -m venv /py && \
 RUN apk add --update --no-cache postgresql-client \
     libjpeg-turbo \
     libjpeg-turbo-dev \
+    musl \
     musl-dev
 
 RUN apk add --update --no-cache --virtual .tmp-build-deps \
@@ -46,6 +47,12 @@ RUN adduser \
     --disabled-password \
     --no-create-home \
     django-user
+
+# setting up th volume for the media and static files
+RUN mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 ENV PATH="/py/bin:$PATH"
 
