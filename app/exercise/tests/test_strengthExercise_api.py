@@ -2,7 +2,10 @@
 Test for strength exercise APIs
 """
 # from decimal import Decimal
-# import os
+import tempfile
+import os
+
+from PIL import Image
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -28,6 +31,12 @@ TRACK_EXERCISE_URL = reverse('exercise:track-exercise-list')
 def detail_url(exercise_id):
     """ Return strength exercise detail URL"""
     return reverse('exercise:strength-exercise-detail', args=[exercise_id])
+
+
+def image_upload_url(exercise_id):
+    """Return URL for strength exercise image upload"""
+    return reverse('exercise:strength-exercise-upload-image',
+                   args=[exercise_id])
 
 
 def create_strength_exercise(**params):
@@ -530,3 +539,40 @@ class PrivateStrengthExerciseApiTests(TestCase):
                 name=muscle_group['name'],
             ).exists()
             self.assertTrue(exists)
+
+##############################################################################
+
+
+class ImageUploadTests(TestCase):
+    """Test image upload for strength exercise"""
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(email='user@example.com', password='test123')
+        self.client.force_authenticate(self.user)
+        self.exercise = create_strength_exercise()
+
+    def tearDown(self):
+        self.exercise.image.delete()
+
+    def test_upload_image_to_strength_exercise(self):
+        """Test uploading an image to strength exercise"""
+        url = image_upload_url(self.exercise.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
+            img = Image.new('RGB', (10, 10))
+            img.save(image_file, format='JPEG')
+            image_file.seek(0)  # move the pointer to the start of the file
+            payload = {'image': image_file}
+            res = self.client.post(url, payload, format='multipart')
+
+        self.exercise.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.exercise.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image"""
+        url = image_upload_url(self.exercise.id)
+        payload = {'image': 'noRandomImage'}
+        res = self.client.post(url, payload, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

@@ -1,8 +1,8 @@
 """
 Database Models
 """
-# import uuid
-# import os
+import uuid
+import os
 
 from django.utils import timezone
 from django.conf import settings
@@ -15,7 +15,16 @@ from django.contrib.auth.models import (
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 from datetime import datetime
+
 current_year = datetime.now().year
+
+
+def strengthExercise_image_file_path(instance, filename):
+    """Generate file path for new exercise image"""
+    ext = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads', 'strength_exercise', filename)
 
 
 class UserManager(BaseUserManager):
@@ -125,6 +134,9 @@ class StrengthExercise(models.Model):
     secondary_muscle_groups = models.ManyToManyField(
                             'MuscleGroup',
                             related_name='strength_secondary_muscle_groups')
+
+    image = models.ImageField(null=True,
+                              upload_to=strengthExercise_image_file_path)
 
     def __str__(self):
         return self.name

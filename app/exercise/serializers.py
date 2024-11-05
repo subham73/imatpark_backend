@@ -112,11 +112,12 @@ class StrengthExerciseSerializer(BaseExerciseSerializer):
             ('name', 'dificulty_level', )
 
 
-class TrackExerciseSerializer(BaseExerciseSerializer):
-    """ Serializer for Track Exercise objects"""
-    class Meta(BaseExerciseSerializer.Meta):
-        model = TrackExercise
-        fields = BaseExerciseSerializer.Meta.fields + ('name', )
+class StrengthExerciseImageSerializer(StrengthExerciseSerializer):
+    """Serializer for uploading images to strength exercise"""
+    class Meta(StrengthExerciseSerializer.Meta):
+        fields = ('id', 'image', )
+        read_only_fields = ['id']
+        extra_kwargs = {'image': {'required': 'True'}}
 
 
 class StrengthExerciseDetailSerializer(StrengthExerciseSerializer):
@@ -124,7 +125,15 @@ class StrengthExerciseDetailSerializer(StrengthExerciseSerializer):
     class Meta(StrengthExerciseSerializer.Meta):
         '''comma is neccessary here with out it will be a string
           and with, its a tuple eg. ('description', 'image')'''
-        fields = StrengthExerciseSerializer.Meta.fields + ('description', )
+        fields = StrengthExerciseSerializer.Meta.fields + \
+            ('description', 'image')
+
+
+class TrackExerciseSerializer(BaseExerciseSerializer):
+    """ Serializer for Track Exercise objects"""
+    class Meta(BaseExerciseSerializer.Meta):
+        model = TrackExercise
+        fields = BaseExerciseSerializer.Meta.fields + ('name', )
 
 
 class TrackExerciseDetailSerializer(TrackExerciseSerializer):
